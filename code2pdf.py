@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 import argparse
 from reportlab.pdfgen import canvas
@@ -37,7 +38,16 @@ def parse_ignore_file(root_dir):
     """Parses the .ignore file and returns a PathSpec object."""
     ignore_path = os.path.join(root_dir, '.ignore')
     if not os.path.exists(ignore_path):
-        return None
+        # print(f"{ignore_path} not found")
+        # return None
+        base_ignore_path = os.path.join(os.path.dirname(__file__), '.ignore')
+        try:
+           shutil.copy(base_ignore_path, ignore_path)
+           print(f"{ignore_path} copy success")
+        except IOError as e:
+           print("Unable to copy file. %s" % e)
+        except:
+           print("Unexpected error:", sys.exc_info())
 
     with open(ignore_path, 'r', encoding='utf-8') as f:
         ignore_patterns = [line.strip() for line in f if line.strip() and not line.startswith('#')]
@@ -182,8 +192,8 @@ def main():
 
     project_directory = args.project_directory
     output_pdf = args.output_pdf
-    font_name = 'WenQuanYi Micro Hei'  # Change this to a font available on your system if needed
-
+    # font_name = 'WenQuanYi Micro Hei'  # Change this to a font available on your system if needed
+    font_name = "SimHei"
     # Register the custom font from the system
     font_name = register_custom_font(font_name)
 
